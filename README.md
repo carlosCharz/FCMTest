@@ -1,4 +1,4 @@
-# FCM Test: First Firebase Cloud Messaging App
+# FCM Test: Firebase Cloud Messaging App
 
 Description:
 
@@ -10,3 +10,7 @@ Technologies:
  * Android
  * Firebase
  * PHP
+ * MySQL
+ 
+Considerations:
+ * Localhost
