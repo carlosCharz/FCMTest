@@ -12,5 +12,22 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:text="Sending FCM Messages!"
+        android:id="@+id/textView" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Activate"
+        android:id="@+id/buttonActivate"
+        android:layout_marginTop="115dp"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Reset Tokens"
+        android:id="@+id/buttonReset"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"/>
 </RelativeLayout>

@@ -36,7 +36,7 @@
 		}
 	}
 	mysqli_close($conn);
-	$message = array("message" => " FCM PUSH NOTIFICATION TEST MESSAGE");
+	$message = array("message" => " FCM Push Notification: Hello World!");
 	$message_status = send_notification($tokens, $message);
 	echo $message_status;
  ?>

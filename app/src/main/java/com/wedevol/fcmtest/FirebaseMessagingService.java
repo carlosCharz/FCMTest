@@ -4,6 +4,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -15,7 +16,10 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
-        showNotification(remoteMessage.getData().get("message"));
+        String message = remoteMessage.getData().get("message");
+        Log.d("FCM Message Service", "Message received: " + message);
+
+        showNotification(message);
     }
 
     private void showNotification(String message) {
@@ -26,7 +30,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                 .setAutoCancel(true)
-                .setContentTitle("FCM Test")
+                .setContentTitle("FCM Test App")
                 .setContentText(message)
                 .setSmallIcon(R.drawable.common_google_signin_btn_icon_dark)
                 .setContentIntent(pendingIntent);
