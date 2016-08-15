@@ -6,11 +6,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.RemoteMessage;
 
 import java.io.IOException;
+import java.util.Random;
 
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
@@ -18,6 +21,10 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 
 public class MainActivity extends AppCompatActivity {
+
+    Random random = new Random();
+    EditText editTextMessage;
+    String message;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +69,24 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        editTextMessage = (EditText) findViewById(R.id.editTextMessage);
+        Button buttonUpstream = (Button) findViewById(R.id.buttonUpstream);
+        buttonUpstream.setOnClickListener( new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Log.d("Main", "Upstream message button");
+                message = editTextMessage.getText().toString();
+                FirebaseMessaging fm = FirebaseMessaging.getInstance();
+                fm.send(new RemoteMessage.Builder("431269160141" + "@gcm.googleapis.com")
+                        .setMessageId(Integer.toString(random.nextInt()))
+                        .addData("message", message)
+                        .addData("action","com.wedevol.MESSAGE")
+                        .build());
+            }
+        });
+
     }
 
     private void deleteTokens() {
