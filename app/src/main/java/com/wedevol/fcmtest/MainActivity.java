@@ -36,9 +36,19 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                Log.d("Main", "Activate button");
-                FirebaseMessaging.getInstance().subscribeToTopic("test");
-                FirebaseInstanceId.getInstance().getToken();
+
+                new AsyncTask() {
+
+                    @Override
+                    protected Object doInBackground(Object[] params) {
+                            Log.d("Main", "Activate button");
+                            FirebaseMessaging.getInstance().subscribeToTopic("test");
+                            String token = FirebaseInstanceId.getInstance().getToken();
+
+                            registerToken(token);
+                        return null;
+                    }
+                }.execute(null, null, null);
             }
         });
 
@@ -87,6 +97,25 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    public static void registerToken(String token) {
+
+        OkHttpClient client = new OkHttpClient();
+        RequestBody body = new FormBody.Builder()
+                .add("token",token)
+                .build();
+
+        Request request = new Request.Builder()
+                .url("http://10.0.2.2/fcmtest/register.php")
+                .post(body)
+                .build();
+
+        try {
+            client.newCall(request).execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void deleteTokens() {
