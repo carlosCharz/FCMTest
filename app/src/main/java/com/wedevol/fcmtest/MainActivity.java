@@ -52,8 +52,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button buttonReset = (Button) findViewById(R.id.buttonReset);
-        buttonReset.setOnClickListener( new View.OnClickListener() {
+        Button buttonDelete = (Button) findViewById(R.id.buttonDelete);
+        buttonDelete.setOnClickListener( new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -64,13 +64,13 @@ public class MainActivity extends AppCompatActivity {
                     protected Object doInBackground(Object[] params) {
                         try {
                             Log.d("Main", "Reset button");
-                            //Reset Instance ID and revokes all tokens but it just should remove one token
-                            FirebaseInstanceId.getInstance().deleteInstanceId();
 
-                            //Delete tokens from database
-                            deleteTokens();
+                            String token = FirebaseInstanceId.getInstance().getToken();
+                            FirebaseInstanceId.getInstance().deleteToken("431269160141", "GCM");
 
-                        } catch (IOException e) {
+                            deleteToken(token);
+
+                            } catch (IOException e) {
                             e.printStackTrace();
                         }
                         return null;
@@ -118,14 +118,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void deleteTokens() {
-
+    private void deleteToken(String token){
         OkHttpClient client = new OkHttpClient();
         RequestBody body = new FormBody.Builder()
+                .add("token",token)
                 .build();
 
         Request request = new Request.Builder()
-                .url("http://10.0.2.2/fcmtest/reset.php")
+                .url("http://10.0.2.2/fcmtest/delete.php")
                 .post(body)
                 .build();
 
