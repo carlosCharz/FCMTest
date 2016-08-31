@@ -16,6 +16,8 @@
             </intent-filter>
         </activity>
 
+        <uses-permission android:name="android.permission.INTERNET" />
+
         <service
             android:name=".FirebaseMessagingService">
             <intent-filter>
