@@ -11,7 +11,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -40,17 +39,31 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
     private static final String TAG = "MainActivity";
     private static final int MAX_ATTEMPTS = 10;
     private static final int BACKOFF_MILLI_SECONDS = 500;
-    private Boolean sentTokenToServer = false;
-    private Random random = new Random();
-    private EditText editTextMessage;
-    private EditText editTextMessage2;
+    private static final String FCM_PROJECT_SENDER_ID = "431269160141";
+    private static final String FCM_PROJECT_SCOPE = "GCM";
+    private static final String FCM_SERVER_CONNECTION = "@gcm.googleapis.com";
+    private static final String BACKEND_SERVER_IP = "10.0.2.2";
+    private static final String BACKEND_URL_BASE = "http://" + BACKEND_SERVER_IP;
+    private static final String BACKEND_ACTION_MESSAGE = "com.wedevol.MESSAGE";
+    private static final String BACKEND_ACTION_ECHO = "com.wedevol.ECHO";
+
+    private EditText editTextSend;
+    private EditText editTextEcho;
+    private Spinner spinnerTargetDevice;
+    private TextView deviceText;
+    private Button buttonActivate;
+    private Button buttonDelete;
+    private Button buttonReset;
+    private Button buttonUpstreamSend;
+    private Button buttonUpstreamEcho;
+
+    private Boolean sentTokenToServer;
+    private Random random;
     private String message;
     private String recipient;
+    private String token = "";
     private ArrayList<String> tokens;
     private ArrayAdapter<String> adapter;
-    private JSONArray result;
-    private Spinner spinner;
-    private TextView deviceText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,58 +71,80 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         setContentView(R.layout.activity_main);
 
         deviceText = (TextView) findViewById(R.id.deviceText);
-        deviceText.setText("Device: ");
-        tokens = new ArrayList<String>();
-        sentTokenToServer = false;
+        editTextSend = (EditText) findViewById(R.id.editTextSend);
+        editTextEcho = (EditText) findViewById(R.id.editTextEcho);
+        buttonActivate = (Button) findViewById(R.id.buttonActivate);
+        buttonDelete = (Button) findViewById(R.id.buttonDelete);
+        buttonReset = (Button) findViewById(R.id.buttonReset);
+        buttonUpstreamSend = (Button) findViewById(R.id.buttonUpstreamSend);
+        buttonUpstreamEcho = (Button) findViewById(R.id.buttonUpstreamEcho);
+        spinnerTargetDevice = (Spinner) findViewById(R.id.spinnerTargetDevice);
 
-        Button buttonActivate = (Button) findViewById(R.id.buttonActivate);
+        random = new Random();
+        sentTokenToServer = false;
+        tokens = new ArrayList<String>();
+        adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_spinner_dropdown_item, tokens);
+        spinnerTargetDevice.setOnItemSelectedListener(this);
+        buttonDelete.setEnabled(false);
+        buttonUpstreamSend.setEnabled(false);
+        buttonUpstreamEcho.setEnabled(false);
+
+        getSpinnerData();
+
         buttonActivate.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
 
-                final String token = FirebaseInstanceId.getInstance().getToken();
-                deviceText.setText("Device: "+ token);
+                Log.d(TAG, "Activation logic");
+                FirebaseMessaging.getInstance().subscribeToTopic("test");
+                token = FirebaseInstanceId.getInstance().getToken();
+                Log.d(TAG, "Token: " + token);
+                deviceText.setText("Device: " + token);
                 if (!tokens.contains(token)) {
                     tokens.add(token);
                 }
                 adapter.notifyDataSetChanged();
+                buttonDelete.setEnabled(true);
+                buttonUpstreamSend.setEnabled(true);
+                buttonUpstreamEcho.setEnabled(true);
 
                 new AsyncTask() {
 
                     @Override
                     protected Object doInBackground(Object[] params) {
-                        Log.d("Main", "Activate button");
-                        FirebaseMessaging.getInstance().subscribeToTopic("test");
-                        String token = FirebaseInstanceId.getInstance().getToken();
 
                         registerTokenInAppServer(token);
+
                         return null;
                     }
                 }.execute(null, null, null);
             }
         });
 
-        Button buttonDelete = (Button) findViewById(R.id.buttonDelete);
+
         buttonDelete.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
 
-                final String token = deviceText.getText().toString();
+                Log.d(TAG, "Deletion logic");
                 deviceText.setText("");
-                tokens.remove(token);
+                if (tokens.contains(token)) {
+                    tokens.remove(token);
+                }
                 adapter.notifyDataSetChanged();
+                buttonDelete.setEnabled(false);
+                buttonUpstreamSend.setEnabled(false);
+                buttonUpstreamEcho.setEnabled(false);
+
                 new AsyncTask() {
 
                     @Override
                     protected Object doInBackground(Object[] params) {
                         try {
-                            Log.d("Main", "Delete button");
 
-                            String token = FirebaseInstanceId.getInstance().getToken();
-                            FirebaseInstanceId.getInstance().deleteToken("431269160141", "GCM");
-
+                            FirebaseInstanceId.getInstance().deleteToken(FCM_PROJECT_SENDER_ID, FCM_PROJECT_SCOPE);
                             deleteToken(token);
 
                         } catch (IOException e) {
@@ -122,26 +157,27 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
             }
         });
 
-        Button buttonReset = (Button) findViewById(R.id.buttonReset);
         buttonReset.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
 
-                //tokens.removeAll();
+                Log.d(TAG, "Reset logic (delete all tokens)");
+                deviceText.setText("");
+                tokens.removeAll(tokens);
                 adapter.notifyDataSetChanged();
+                buttonDelete.setEnabled(false);
+                buttonUpstreamSend.setEnabled(false);
+                buttonUpstreamEcho.setEnabled(false);
+
                 new AsyncTask() {
 
                     @Override
                     protected Object doInBackground(Object[] params) {
                         try {
-                            Log.d("Main", "Reset button");
 
                             FirebaseInstanceId.getInstance().deleteInstanceId();
-
-                            //Delete tokens from database
-                            resetTokens();
-
+                            deleteTokens();
 
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -153,46 +189,35 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
             }
         });
 
-        spinner = (Spinner) findViewById(R.id.targetDevice);
-        spinner.setOnItemSelectedListener(this);
-
-        getSpinnerData();
-
-        editTextMessage = (EditText) findViewById(R.id.editTextMessage);
-        Button buttonUpstream = (Button) findViewById(R.id.buttonUpstream);
-        buttonUpstream.setOnClickListener(new View.OnClickListener() {
+        buttonUpstreamSend.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                Log.d("Main", "Upstream message button");
-                message = editTextMessage.getText().toString();
-                recipient = spinner.getSelectedItem().toString();
-                //recipient = getTokenFromSpinner(spinner.getSelectedItemPosition());
-                Log.d("Main", "Message: " + message + ", recipient: " + recipient);
-                FirebaseMessaging fm = FirebaseMessaging.getInstance();
-                fm.send(new RemoteMessage.Builder("431269160141" + "@gcm.googleapis.com")
+                Log.d(TAG, "Upstream message logic");
+                message = editTextSend.getText().toString();
+                recipient = spinnerTargetDevice.getSelectedItem().toString();
+                //recipient = getTokenFromSpinner(spinnerTargetDevice.getSelectedItemPosition());
+                Log.d(TAG, "Message: " + message + ", recipient: " + recipient);
+                FirebaseMessaging.getInstance().send(new RemoteMessage.Builder(FCM_PROJECT_SENDER_ID + FCM_SERVER_CONNECTION)
                         .setMessageId(Integer.toString(random.nextInt()))
                         .addData("message", message)
                         .addData("recipient", recipient)
-                        .addData("action", "com.wedevol.MESSAGE")
+                        .addData("action", BACKEND_ACTION_MESSAGE)
                         .build());
             }
         });
 
-        editTextMessage2 = (EditText) findViewById(R.id.editTextMessage2);
-        Button buttonUpstream2 = (Button) findViewById(R.id.buttonUpstream2);
-        buttonUpstream2.setOnClickListener(new View.OnClickListener() {
+        buttonUpstreamEcho.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                Log.d("Main", "Echo Upstream message button");
-                message = editTextMessage2.getText().toString();
-                Log.d("Main", "Message: " + message);
-                FirebaseMessaging fm = FirebaseMessaging.getInstance();
-                fm.send(new RemoteMessage.Builder("431269160141" + "@gcm.googleapis.com")
+                Log.d(TAG, "Echo Upstream message logic");
+                message = editTextEcho.getText().toString();
+                Log.d(TAG, "Message: " + message + ", recipient: " + token);
+                FirebaseMessaging.getInstance().send(new RemoteMessage.Builder(FCM_PROJECT_SENDER_ID + FCM_SERVER_CONNECTION)
                         .setMessageId(Integer.toString(random.nextInt()))
                         .addData("message", message)
-                        .addData("action", "com.wedevol.ECHO")
+                        .addData("action", BACKEND_ACTION_ECHO)
                         .build());
             }
         });
@@ -202,12 +227,14 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
     private void registerTokenPost(String token) throws IOException {
 
         OkHttpClient client = new OkHttpClient();
+        String url = BACKEND_URL_BASE + "/fcmtest/register.php";
         RequestBody body = new FormBody.Builder()
                 .add("token", token)
                 .build();
 
+        Log.d(TAG, url);
         Request request = new Request.Builder()
-                .url("http://10.0.2.2/fcmtest/register.php")
+                .url(url)
                 .post(body)
                 .build();
 
@@ -219,13 +246,16 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
     }
 
     private void deleteToken(String token) {
+
         OkHttpClient client = new OkHttpClient();
+        String url = BACKEND_URL_BASE + "/fcmtest/delete.php";
         RequestBody body = new FormBody.Builder()
                 .add("token", token)
                 .build();
 
+        Log.d(TAG, url);
         Request request = new Request.Builder()
-                .url("http://10.0.2.2/fcmtest/delete.php")
+                .url(url)
                 .post(body)
                 .build();
 
@@ -236,14 +266,16 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         }
     }
 
-    private void resetTokens() {
+    private void deleteTokens() {
 
         OkHttpClient client = new OkHttpClient();
+        String url = BACKEND_URL_BASE + "/fcmtest/reset.php";
         RequestBody body = new FormBody.Builder()
                 .build();
 
+        Log.d(TAG, url);
         Request request = new Request.Builder()
-                .url("http://10.0.2.2/fcmtest/reset.php")
+                .url(url)
                 .post(body)
                 .build();
 
@@ -253,7 +285,6 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
             e.printStackTrace();
         }
     }
-
 
     public void registerTokenInAppServer(String token) {
 
@@ -271,7 +302,6 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
                 sentTokenToServer = true;
                 return;
             } catch (IOException e) {
-                Toast.makeText(getApplicationContext(), "Failed to register ...", Toast.LENGTH_SHORT).show();
 
                 sentTokenToServer = false;
 
@@ -295,16 +325,21 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
             }
         }
     }
-    private void getSpinnerData(){
-        StringRequest stringRequest = new StringRequest("http://10.0.2.2/fcmtest/tokens.php",
+
+    private void getSpinnerData() {
+
+        String url = BACKEND_URL_BASE + "/fcmtest/tokens.php";
+        Log.d(TAG, url);
+        StringRequest stringRequest = new StringRequest(url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         JSONObject j = null;
                         try {
                             j = new JSONObject(response);
-                            result = j.getJSONArray("result");
+                            JSONArray result = j.getJSONArray("result");
                             getTokensId(result);
+                            spinnerTargetDevice.setAdapter(adapter);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -320,8 +355,8 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         requestQueue.add(stringRequest);
     }
 
-    private void getTokensId(JSONArray j){
-        for(int i=0;i<j.length();i++){
+    private void getTokensId(JSONArray j) {
+        for (int i = 0; i < j.length(); i++) {
             try {
                 JSONObject json = j.getJSONObject(i);
                 tokens.add(json.getString("token"));
@@ -329,23 +364,6 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
                 e.printStackTrace();
             }
         }
-        adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_spinner_dropdown_item, tokens);
-        spinner.setAdapter(adapter);
-    }
-
-    private String getTokenFromSpinner(int position){
-        String token="";
-        try {
-            //Getting object of given index
-            JSONObject json = result.getJSONObject(position);
-
-            //Fetching token from that object
-            token = json.getString("token");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        //Returning the token
-        return token;
     }
 
     @Override
@@ -353,8 +371,9 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         //Setting the values to textviews for a selected item
     }
 
-    //When no item is selected this method would execute
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
+        //When no item is selected this method would execute
+
     }
 }

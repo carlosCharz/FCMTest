@@ -18,7 +18,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
+            android:textStyle="bold"
             android:text="Register to FCM and receive push notifications!" />
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -64,6 +64,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
+            android:textStyle="bold"
             android:text="Send Upstream Messages to other devices!" />
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -78,7 +79,7 @@
                 android:text="Device" />
 
             <Spinner
-                android:id="@+id/targetDevice"
+                android:id="@+id/spinnerTargetDevice"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content" />
         </LinearLayout>
@@ -89,7 +90,7 @@
             android:orientation="horizontal">
 
             <EditText
-                android:id="@+id/editTextMessage"
+                android:id="@+id/editTextSend"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:hint="Write your upstream message"
@@ -98,7 +99,7 @@
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <Button
-                android:id="@+id/buttonUpstream"
+                android:id="@+id/buttonUpstreamSend"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Send" />
@@ -115,6 +116,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
+            android:textStyle="bold"
             android:text="Send echo Upstream Messages to yourself!" />
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -123,7 +125,7 @@
             android:orientation="horizontal">
 
             <EditText
-                android:id="@+id/editTextMessage2"
+                android:id="@+id/editTextEcho"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:hint="Write your upstream message"
@@ -132,7 +134,7 @@
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <Button
-                android:id="@+id/buttonUpstream2"
+                android:id="@+id/buttonUpstreamEcho"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Send" />
