@@ -9,7 +9,7 @@ import android.util.Log;
 import com.google.firebase.messaging.RemoteMessage;
 
 /**
- * Created by charz on 8/9/16.
+ * FirebaseMessagingService to show push notifications
  */
 public class FirebaseMessagingService extends com.google.firebase.messaging.FirebaseMessagingService {
     @Override

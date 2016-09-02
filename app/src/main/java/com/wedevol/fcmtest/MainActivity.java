@@ -34,18 +34,21 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
+/**
+ * Main Activity
+ */
 public class MainActivity extends AppCompatActivity implements Spinner.OnItemSelectedListener {
 
     private static final String TAG = "MainActivity";
-    private static final int MAX_ATTEMPTS = 10;
-    private static final int BACKOFF_MILLI_SECONDS = 500;
-    private static final String FCM_PROJECT_SENDER_ID = "431269160141";
-    private static final String FCM_PROJECT_SCOPE = "GCM";
-    private static final String FCM_SERVER_CONNECTION = "@gcm.googleapis.com";
-    private static final String BACKEND_SERVER_IP = "10.0.2.2";
-    private static final String BACKEND_URL_BASE = "http://" + BACKEND_SERVER_IP;
-    private static final String BACKEND_ACTION_MESSAGE = "com.wedevol.MESSAGE";
-    private static final String BACKEND_ACTION_ECHO = "com.wedevol.ECHO";
+    public static final String FCM_PROJECT_SENDER_ID = "431269160141";
+    public static final String FCM_PROJECT_SCOPE = "GCM";
+    public static final String FCM_SERVER_CONNECTION = "@gcm.googleapis.com";
+    public static final String BACKEND_SERVER_IP = "10.0.2.2";
+    public static final String BACKEND_URL_BASE = "http://" + BACKEND_SERVER_IP;
+    public static final String BACKEND_ACTION_MESSAGE = "com.wedevol.MESSAGE";
+    public static final String BACKEND_ACTION_ECHO = "com.wedevol.ECHO";
+    public static final Random RANDOM = new Random();
+
 
     private EditText editTextSend;
     private EditText editTextEcho;
@@ -57,8 +60,6 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
     private Button buttonUpstreamSend;
     private Button buttonUpstreamEcho;
 
-    private Boolean sentTokenToServer;
-    private Random random;
     private String message;
     private String recipient;
     private String token = "";
@@ -80,16 +81,27 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         buttonUpstreamEcho = (Button) findViewById(R.id.buttonUpstreamEcho);
         spinnerTargetDevice = (Spinner) findViewById(R.id.spinnerTargetDevice);
 
-        random = new Random();
-        sentTokenToServer = false;
         tokens = new ArrayList<String>();
         adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_spinner_dropdown_item, tokens);
         spinnerTargetDevice.setOnItemSelectedListener(this);
-        buttonDelete.setEnabled(false);
-        buttonUpstreamSend.setEnabled(false);
-        buttonUpstreamEcho.setEnabled(false);
 
-        getSpinnerData();
+        Log.d(TAG, "On create logic");
+        FirebaseMessaging.getInstance().subscribeToTopic("test");
+        token = FirebaseInstanceId.getInstance().getToken();
+        Log.d(TAG, "Token: " + token);
+        deviceText.setText("Device: " + token);
+
+        new AsyncTask() {
+
+            @Override
+            protected Object doInBackground(Object[] params) {
+
+                FirebaseInstanceIDService.registerTokenInAppServer(token);
+                getSpinnerData();
+
+                return null;
+            }
+        }.execute(null, null, null);
 
         buttonActivate.setOnClickListener(new View.OnClickListener() {
 
@@ -97,7 +109,6 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
             public void onClick(View v) {
 
                 Log.d(TAG, "Activation logic");
-                FirebaseMessaging.getInstance().subscribeToTopic("test");
                 token = FirebaseInstanceId.getInstance().getToken();
                 Log.d(TAG, "Token: " + token);
                 deviceText.setText("Device: " + token);
@@ -114,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
                     @Override
                     protected Object doInBackground(Object[] params) {
 
-                        registerTokenInAppServer(token);
+                        FirebaseInstanceIDService.registerTokenInAppServer(token);
 
                         return null;
                     }
@@ -176,6 +187,7 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
                     protected Object doInBackground(Object[] params) {
                         try {
 
+                            //This should not be implemented (just for testing purposes)
                             FirebaseInstanceId.getInstance().deleteInstanceId();
                             deleteTokens();
 
@@ -196,10 +208,9 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
                 Log.d(TAG, "Upstream message logic");
                 message = editTextSend.getText().toString();
                 recipient = spinnerTargetDevice.getSelectedItem().toString();
-                //recipient = getTokenFromSpinner(spinnerTargetDevice.getSelectedItemPosition());
                 Log.d(TAG, "Message: " + message + ", recipient: " + recipient);
                 FirebaseMessaging.getInstance().send(new RemoteMessage.Builder(FCM_PROJECT_SENDER_ID + FCM_SERVER_CONNECTION)
-                        .setMessageId(Integer.toString(random.nextInt()))
+                        .setMessageId(Integer.toString(RANDOM.nextInt()))
                         .addData("message", message)
                         .addData("recipient", recipient)
                         .addData("action", BACKEND_ACTION_MESSAGE)
@@ -215,34 +226,13 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
                 message = editTextEcho.getText().toString();
                 Log.d(TAG, "Message: " + message + ", recipient: " + token);
                 FirebaseMessaging.getInstance().send(new RemoteMessage.Builder(FCM_PROJECT_SENDER_ID + FCM_SERVER_CONNECTION)
-                        .setMessageId(Integer.toString(random.nextInt()))
+                        .setMessageId(Integer.toString(RANDOM.nextInt()))
                         .addData("message", message)
                         .addData("action", BACKEND_ACTION_ECHO)
                         .build());
             }
         });
 
-    }
-
-    private void registerTokenPost(String token) throws IOException {
-
-        OkHttpClient client = new OkHttpClient();
-        String url = BACKEND_URL_BASE + "/fcmtest/register.php";
-        RequestBody body = new FormBody.Builder()
-                .add("token", token)
-                .build();
-
-        Log.d(TAG, url);
-        Request request = new Request.Builder()
-                .url(url)
-                .post(body)
-                .build();
-
-        try {
-            client.newCall(request).execute();
-        } catch (IOException e) {
-            throw new IOException("Post failed with error message: " + e.getMessage());
-        }
     }
 
     private void deleteToken(String token) {
@@ -286,46 +276,6 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         }
     }
 
-    public void registerTokenInAppServer(String token) {
-
-        long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
-        // Once GCM returns a registration id, we need to register on our server
-        // As the server might be down, we will retry it a couple of times.
-        for (int i = 1; i <= MAX_ATTEMPTS; i++) {
-            Log.d(TAG, "Attempt #" + i + " to register");
-            try {
-                registerTokenPost(token);
-
-                // You should store a boolean that indicates whether the generated token has been
-                // sent to your server. If the boolean is false, send the token to your server,
-                // otherwise your server should have already received the token.
-                sentTokenToServer = true;
-                return;
-            } catch (IOException e) {
-
-                sentTokenToServer = false;
-
-                // Here we are simplifying and retrying on any error; in a real application,
-                // it should retry only on unrecoverable errors (like HTTP error code 503).
-                Log.e(TAG, "Failed to register on attempt " + i + ":" + e);
-                if (i == MAX_ATTEMPTS) {
-                    break;
-                }
-                try {
-                    Log.d(TAG, "Sleeping for " + backoff + " ms before retry");
-                    Thread.sleep(backoff);
-                } catch (InterruptedException e1) {
-                    // Activity finished before we complete - exit.
-                    Log.d(TAG, "Thread interrupted: abort remaining retries!");
-                    Thread.currentThread().interrupt();
-                    return;
-                }
-                // increase backoff exponentially
-                backoff *= 2;
-            }
-        }
-    }
-
     private void getSpinnerData() {
 
         String url = BACKEND_URL_BASE + "/fcmtest/tokens.php";
@@ -339,6 +289,7 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
                             j = new JSONObject(response);
                             JSONArray result = j.getJSONArray("result");
                             getTokensId(result);
+
                             spinnerTargetDevice.setAdapter(adapter);
                         } catch (JSONException e) {
                             e.printStackTrace();
