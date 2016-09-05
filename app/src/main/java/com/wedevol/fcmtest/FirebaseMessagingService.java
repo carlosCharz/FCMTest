@@ -1,5 +1,6 @@
 package com.wedevol.fcmtest;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
@@ -19,10 +20,12 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         String message = remoteMessage.getData().get("message");
         Log.d("FCM Message Service", "Message received: " + message);
 
-        showNotification(message);
+        //showBasicNotification(message);
+        showInboxStyleNotification(message);
+
     }
 
-    private void showNotification(String message) {
+    private void showBasicNotification(String message) {
         Intent i = new Intent(this,MainActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
@@ -30,7 +33,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                 .setAutoCancel(true)
-                .setContentTitle("FCM Test App")
+                .setContentTitle("Basic Notification")
                 .setContentText(message)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentIntent(pendingIntent);
@@ -39,5 +42,27 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
         manager.notify(0,builder.build());
 
+    }
+
+    public void showInboxStyleNotification(String message) {
+        Intent i = new Intent(this,MainActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,0,i,PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Notification.Builder builder = new Notification.Builder(this)
+                .setContentTitle("Inbox Style notification")
+                .setContentText(message)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .addAction(R.mipmap.ic_launcher, "show activity", pendingIntent);
+
+        Notification notification = new Notification.InboxStyle(builder)
+                .addLine("First message").addLine("Second message")
+                .addLine("Third message")
+                .setSummaryText("+3 more").build();
+        // Put the auto cancel notification flag
+        notification.flags |= Notification.FLAG_AUTO_CANCEL;
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.notify(0, notification);
     }
 }
