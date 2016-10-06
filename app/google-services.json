@@ -36,6 +36,37 @@
           "status": 2
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:431269160141:android:7cda75b75703228e",
+        "android_client_info": {
+          "package_name": "com.wifiesta.notifier.core"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "431269160141-gkq1k5peaamsjm9ic2k5dn49abp3ou5j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXd1hWKeqiLx7cfXXTWFgNf9bNkAlLrk0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
     }
   ],
   "configuration_version": "1"
