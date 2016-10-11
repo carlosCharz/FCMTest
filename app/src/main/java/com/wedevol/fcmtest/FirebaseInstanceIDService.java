@@ -59,6 +59,9 @@ public class FirebaseInstanceIDService extends FirebaseInstanceIdService {
     }
 
     public static void registerTokenInAppServer(String token) {
+        if (token == null){
+            return;
+        }
 
         long backoff = BACKOFF_MILLI_SECONDS + MainActivity.RANDOM.nextInt(1000);
         // Once GCM returns a registration id, we need to register on our server

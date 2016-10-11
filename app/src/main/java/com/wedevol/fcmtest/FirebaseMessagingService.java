@@ -20,8 +20,8 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         String message = remoteMessage.getData().get("message");
         Log.d("FCM Message Service", "Message received: " + message);
 
-        //showBasicNotification(message);
-        showInboxStyleNotification(message);
+        showBasicNotification(message);
+        //showInboxStyleNotification(message);
 
     }
 
