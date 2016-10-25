@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
     public static final String FCM_PROJECT_SENDER_ID = "431269160141";
     public static final String FCM_PROJECT_SCOPE = "GCM";
     public static final String FCM_SERVER_CONNECTION = "@gcm.googleapis.com";
-    public static final String BACKEND_SERVER_IP = "wedevol.com";
+    public static final String BACKEND_SERVER_IP = "corporacionkristalia.com";
     public static final String BACKEND_URL_BASE = "http://" + BACKEND_SERVER_IP;
     public static final String BACKEND_ACTION_MESSAGE = "com.momentous.wifiesta.notifier.MESSAGE";
     public static final String BACKEND_ACTION_ECHO = "com.momentous.wifiesta.notifier.ECHO";
