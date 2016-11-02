@@ -9,17 +9,21 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
 
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
-import okhttp3.FormBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
 
 /**
  * Main Activity
@@ -40,9 +44,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView deviceText;
     private Button buttonUpstreamEcho;
 
-    private String message;
-    private String token = "";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,17 +53,16 @@ public class MainActivity extends AppCompatActivity {
         editTextEcho = (EditText) findViewById(R.id.editTextEcho);
         buttonUpstreamEcho = (Button) findViewById(R.id.buttonUpstreamEcho);
 
-        Log.d(TAG, "On create logic");
+        Log.d(TAG, "Create logic");
         FirebaseMessaging.getInstance().subscribeToTopic("test");
-        token = FirebaseInstanceId.getInstance().getToken();
+        final String token = FirebaseInstanceId.getInstance().getToken();
         Log.d(TAG, "Token: " + token);
-        deviceText.setText("Device: " + token);
+        deviceText.setText(token);
 
         new AsyncTask() {
 
             @Override
             protected Object doInBackground(Object[] params) {
-
                 registerTokenInDB(token);
                 return null;
             }
@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "Echo Upstream message logic");
-                message = editTextEcho.getText().toString();
+                String message = editTextEcho.getText().toString();
                 Log.d(TAG, "Message: " + message + ", recipient: " + token);
                 FirebaseMessaging.getInstance().send(new RemoteMessage.Builder(FCM_PROJECT_SENDER_ID + FCM_SERVER_CONNECTION)
                         .setMessageId(Integer.toString(RANDOM.nextInt()))
@@ -87,26 +87,44 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public static void registerTokenInDB(String token) {
+    public void registerTokenInDB(final String token) {
         // The call should have a back off strategy
+        Log.d(TAG, "Register token in database logic");
 
-        OkHttpClient client = new OkHttpClient();
-        String url = MainActivity.BACKEND_URL_BASE + "/fcmtest/register.php";
-        RequestBody body = new FormBody.Builder()
-                .add("token", token)
-                .build();
+        // Instantiate the RequestQueue.
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url = BACKEND_URL_BASE + "/PHP/fcmtest/register.php";
 
-        Log.d(TAG, url);
-        Request request = new Request.Builder()
-                .url(url)
-                .post(body)
-                .build();
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(TAG, "Token registered successfully in the DB");
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d(TAG, "Error trying to register the token in the DB");
+            }
+        }){
+            @Override
+            protected Map<String,String> getParams(){
+                Map<String,String> params = new HashMap<String, String>();
+                params.put("token",token);
+                return params;
+            }
 
-        try {
-            client.newCall(request).execute();
-        } catch (IOException e) {
-            Log.d(TAG, "Error trying to register the token in the DB");
-        }
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> params = new HashMap<String, String>();
+                params.put("Content-Type","application/x-www-form-urlencoded");
+                return params;
+            }
+        };
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest);
+
     }
 
 }

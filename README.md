@@ -12,15 +12,23 @@ PHP:
  * Get the list of tokens in the DB.
  * Send push notifications to registered device clients.
 
+Firebase:
+ * Send push notifications through the firebase console
+
+Documentation:
+ * Firebase, links, 
+
 Technologies:
 
  * Android
  * Firebase
  * PHP
  * MySQL
- 
+
+
 Considerations:
  * Localhost
+
 
 Related projects:
  * XMPP Server
