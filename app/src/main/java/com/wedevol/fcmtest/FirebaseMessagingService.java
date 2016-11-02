@@ -13,15 +13,30 @@ import com.google.firebase.messaging.RemoteMessage;
  * FirebaseMessagingService to show push notifications
  */
 public class FirebaseMessagingService extends com.google.firebase.messaging.FirebaseMessagingService {
+
+    private static final String TAG = "FCMMessagingService";
+
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
-        String message = remoteMessage.getData().get("message");
-        Log.d("FCM Message Service", "Message received: " + message);
+        Log.d(TAG, "From: " + remoteMessage.getFrom());
 
-        showBasicNotification(message);
-        //showInboxStyleNotification(message);
+        // Check if message contains a data payload.
+        if (remoteMessage.getData().size() > 0) {
+            Log.d(TAG, "Message data payload: " + remoteMessage.getData());
+            // In this case the XMPP Server sends a payload data
+            String message = remoteMessage.getData().get("message");
+            Log.d(TAG, "Message received: " + message);
+
+            showBasicNotification(message);
+            //showInboxStyleNotification(message);
+        }
+
+        // Check if message contains a notification payload.
+        if (remoteMessage.getNotification() != null) {
+            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+        }
 
     }
 
@@ -57,7 +72,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                 .addAction(R.mipmap.ic_launcher, "show activity", pendingIntent);
 
         Notification notification = new Notification.InboxStyle(builder)
-                .addLine("First message").addLine("Second message")
+                .addLine(message).addLine("Second message")
                 .addLine("Third message")
                 .setSummaryText("+3 more").build();
         // Put the auto cancel notification flag

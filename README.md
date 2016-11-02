@@ -1,9 +1,15 @@
 # FCM Test: Firebase Cloud Messaging App
 
-Description:
+Android:
+
+ * Send upstream messages to XMPP Server. (It is a echo to the same device)
+ * Show push notifications.
+
+
+PHP:
 
  * Register tokens from device clients into DB.
- * Reset Instance ID and revokes all tokens (just for testing purposes).
+ * Get the list of tokens in the DB.
  * Send push notifications to registered device clients.
 
 Technologies:
@@ -15,3 +21,8 @@ Technologies:
  
 Considerations:
  * Localhost
+
+Related projects:
+ * XMPP Server
+ * Upgrade
+ * Back off strategy
