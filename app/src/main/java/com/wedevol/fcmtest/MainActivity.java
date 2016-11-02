@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String BACKEND_SERVER_IP = "10.0.2.2";
     public static final String BACKEND_URL_BASE = "http://" + BACKEND_SERVER_IP;
     public static final String BACKEND_ACTION_MESSAGE = "MESSAGE";
-    public static final String BACKEND_ACTION_ECHO = "ECHO";
+    public static final String BACKEND_ACTION_ECHO = "com.wedevol.ECHO";
     public static final Random RANDOM = new Random();
 
 
