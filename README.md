@@ -1,13 +1,16 @@
 # FCM Test: Firebase Cloud Messaging Android App
 
-This is a sample Android project to showcase the Firebase Cloud Messaging (FCM) to manage upstream and downstream messages. To be precise, it is the client project for my [XMPP Connection Server for FCM](https://github.com/carlosCharz/fcmxmppserver). The objective is to test the complete flow from the android - FCM CCS - XMPP Client Server - Android.
+This is a sample Android project to showcase the Firebase Cloud Messaging (FCM) to manage upstream and downstream messages. To be precise, it is the client project for my [XMPP Connection Server for FCM](https://github.com/carlosCharz/fcmxmppserver). The objective is to have an end-to-end testing:
 
-##What this project does
+1.  Upstream message: Android - FCM CCS - XMPP Client Server.
+2.  Downstream message: XMPP Client Server - FCM CCS - Android.
+
+##What this project does?
 
 **Android**
 
- * Send upstream messages to XMPP Server. (It is a echo to the same device)
- * Show push notifications.
+ * Send upstream messages to the XMPP Server. (It is a echo to the same device)
+ * Handle push notifications.
 
 
 **PHP**

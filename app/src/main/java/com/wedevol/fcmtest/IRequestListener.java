@@ -1,7 +1,7 @@
 package com.wedevol.fcmtest;
 
 /**
- * Request Listener Interface. It is just to handle the HTTP request error.
+ * Request Listener Interface. It is just to handle the HTTP request error
  */
 
 public interface IRequestListener {

@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Token service to handle the registration into the DB
+ * Token service to handle the registration into the database
  */
 
 public class TokenService {

@@ -10,7 +10,7 @@ import android.util.Log;
 import com.google.firebase.messaging.RemoteMessage;
 
 /**
- * FirebaseMessagingService to show push notifications
+ * Firebase Messaging Service to handle push notifications
  */
 public class FirebaseMessagingService extends com.google.firebase.messaging.FirebaseMessagingService {
 
