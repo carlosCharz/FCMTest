@@ -1,11 +1,12 @@
 package com.wedevol.fcmtest;
 
 /**
- * Created by Asus3 on 11/4/2016.
+ * Request Listener Interface. It is just to handle the HTTP request error.
  */
 
 public interface IRequestListener {
+
     void onComplete();
 
-    void onError(int code, String message);
+    void onError(String message);
 }

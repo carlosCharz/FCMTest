@@ -1,6 +1,5 @@
 package com.wedevol.fcmtest;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -9,24 +8,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 
 /**
- * Main Activity
+ * Main Activity for FCM Token
  */
 public class MainActivity extends AppCompatActivity implements IRequestListener {
 
@@ -37,7 +27,6 @@ public class MainActivity extends AppCompatActivity implements IRequestListener 
     public static final String BACKEND_ACTION_ECHO = "com.wedevol.ECHO";
     public static final Random RANDOM = new Random();
 
-
     private EditText editTextEcho;
     private TextView deviceText;
     private Button buttonUpstreamEcho;
@@ -47,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements IRequestListener 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Log.d(TAG, "FCM Token create method");
+        Log.d(TAG, "FCM Token creation logic");
 
         // Get variables reference
         deviceText = (TextView) findViewById(R.id.deviceText);
@@ -62,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements IRequestListener 
 
         //Call the token service to save the token in the database
         tokenService = new TokenService(this, this);
-        tokenService.execute(token);
+        tokenService.registerTokenInDB(token);
 
         buttonUpstreamEcho.setOnClickListener(new View.OnClickListener() {
 
@@ -83,14 +72,14 @@ public class MainActivity extends AppCompatActivity implements IRequestListener 
 
     }
 
-
     @Override
     public void onComplete() {
-        //success
+        Log.d(TAG, "Token registered successfully in the DB");
+
     }
 
     @Override
-    public void onError(int code, String message) {
-    //error
+    public void onError(String message) {
+        Log.d(TAG, "Error trying to register the token in the DB: " + message);
     }
 }
