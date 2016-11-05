@@ -9,7 +9,7 @@ This is a sample Android project to showcase the Firebase Cloud Messaging (FCM) 
 
 **Android**
 
- * Send upstream messages to the XMPP Server. (It is a echo to the same device)
+ * Send upstream messages to the XMPP Client Server.
  * Handle push notifications.
 
 
@@ -17,11 +17,15 @@ This is a sample Android project to showcase the Firebase Cloud Messaging (FCM) 
 
  * Register tokens from device clients into DB.
  * Get the list of tokens in the DB.
- * Send push notifications to registered device clients.
+ * Send push notifications to registered devices.
 
 **Firebase**
 
  * Send push notifications through the Firebase console.
+
+**XMPP Client Server**
+
+ * Send downstream messages to a device.
 
 
 ##Documentation
