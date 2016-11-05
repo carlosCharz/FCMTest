@@ -50,6 +50,7 @@ For more information must read the following documentation:
 ##Considerations
  * Localhost for android: 10.0.2.2
  * IDE: Android Studio
+ * You can find the PHP and MySQL scripts in the application root folder.
 
 
 ##Related projects
