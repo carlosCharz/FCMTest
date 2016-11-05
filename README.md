@@ -15,8 +15,8 @@ This is a sample Android project to showcase the Firebase Cloud Messaging (FCM) 
 
 **PHP**
 
- * Register tokens from device clients into DB.
- * Get the list of tokens in the DB.
+ * Register tokens from devices into the database.
+ * Get the list of tokens from the database.
  * Send push notifications to registered devices.
 
 **Firebase**
@@ -41,14 +41,14 @@ For more information must read the following documentation:
 
 ##Technologies
  * Android
- * Firebase
+ * Firebase Cloud Messaging
  * PHP
  * MySQL
+ * Apache Server
 
 
 ##Considerations
  * Localhost for android: 10.0.2.2
- * Localhost for mysql
  * IDE: Android Studio
 
 
