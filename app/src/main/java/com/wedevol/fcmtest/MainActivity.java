@@ -21,10 +21,10 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity implements IRequestListener {
 
     private static final String TAG = "MainActivity";
-    public static final String FCM_PROJECT_SENDER_ID = "431269160141";
+    public static final String FCM_PROJECT_SENDER_ID = "972853060639";
     public static final String FCM_SERVER_CONNECTION = "@gcm.googleapis.com";
     public static final String BACKEND_ACTION_MESSAGE = "MESSAGE";
-    public static final String BACKEND_ACTION_ECHO = "com.wedevol.ECHO";
+    public static final String BACKEND_ACTION_ECHO = "ECHO";
     public static final Random RANDOM = new Random();
 
     private EditText editTextEcho;
