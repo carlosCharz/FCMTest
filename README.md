@@ -1,11 +1,11 @@
-#Firebase Cloud Messaging Android App
+# Firebase Cloud Messaging Android App
 
 This is a sample Android project to showcase the Firebase Cloud Messaging (FCM) to manage upstream and downstream messages. To be precise, it is the client project for my [XMPP Connection Server for FCM](https://github.com/carlosCharz/fcmxmppserver). The objective is to have an end-to-end testing:
 
 1.  Upstream message: Android - FCM CCS - XMPP Client Server.
 2.  Downstream message: XMPP Client Server - FCM CCS - Android.
 
-##What this project does?
+## What this project does?
 
 **Android**
 
@@ -28,7 +28,7 @@ This is a sample Android project to showcase the Firebase Cloud Messaging (FCM) 
  * Send downstream messages to a device.
 
 
-##Documentation
+## Documentation
 For more information must read the following documentation: 
  
 * [Create new project in Firebase](https://console.firebase.google.com/)
@@ -39,7 +39,7 @@ For more information must read the following documentation:
 * [Volley library for Android](https://developer.android.com/training/volley/simple.html)
 
 
-##Technologies
+## Technologies
  * Android
  * Firebase Cloud Messaging
  * PHP
@@ -47,19 +47,19 @@ For more information must read the following documentation:
  * Apache Server
 
 
-##Considerations
+## Considerations
  * Localhost for android: 10.0.2.2
  * IDE: Android Studio
  * You can find the PHP and MySQL scripts in the application root folder.
 
 
-##Related projects
+## Related projects
  * [Implementation of an XMPP Connection Server for FCM](https://github.com/carlosCharz/fcmxmppserver)
  * [XMPP Connection Server for FCM using the latest version of the Smack library (4.1.8)](https://github.com/carlosCharz/fcmxmppserverv2)
  * [Implementation of a base exponential back-off strategy class](https://github.com/carlosCharz/ExponentialBackOff)
 
 
-##About me
+## About me
 I am Carlos Becerra - MSc. Softwware & Systems. You can contact me via:
 
 * [Google+](https://plus.google.com/+CarlosBecerraRodr%C3%ADguez)
@@ -68,7 +68,7 @@ I am Carlos Becerra - MSc. Softwware & Systems. You can contact me via:
 
 _**Any improvement or comment about the project is always welcome! As well as others shared their code publicly I want to share mine! Thanks!**_
 
-##License
+## License
 ```javas
 Copyright 2016 Carlos Becerra
 
