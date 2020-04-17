@@ -1,6 +1,7 @@
 package com.wedevol.fcmtest;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -20,8 +21,9 @@ import java.util.Map;
 public class TokenService {
 
     private static final String TAG = "TokenService";
-    public static final String BACKEND_SERVER_IP = "10.0.2.2";
+    public static final String BACKEND_SERVER_IP = "10.0.2.2"; // ip for the emulator
     public static final String BACKEND_URL_BASE = "http://" + BACKEND_SERVER_IP;
+    public static final String BACKEND_FULL_URL = BACKEND_URL_BASE + "/fcmtest/register.php";
 
     private Context context;
     private IRequestListener listener;
@@ -32,11 +34,12 @@ public class TokenService {
     }
 
     public void registerTokenInDB(final String token) {
-        // The call should have a back off strategy
+        // TODO The call should have a back off strategy
 
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(context);
-        String url = BACKEND_URL_BASE + "/PHP/fcmtest/register.php";
+        String url = BACKEND_FULL_URL;
+        Log.d(TAG, "Trying to register token in DB ...");
 
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
@@ -48,7 +51,7 @@ public class TokenService {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                listener.onError(error.getMessage());
+                listener.onError(error.getLocalizedMessage());
             }
         }) {
             @Override
@@ -67,6 +70,5 @@ public class TokenService {
         };
         // Add the request to the RequestQueue.
         queue.add(stringRequest);
-
     }
 }

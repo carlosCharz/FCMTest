@@ -25,7 +25,7 @@ This is a sample Android project to showcase the Firebase Cloud Messaging (FCM) 
 
 **XMPP Client Server**
 
- * Send downstream messages to a device.
+ * Send downstream messages to a device. Java implementation.
 
 
 ## Documentation
@@ -41,6 +41,7 @@ For more information must read the following documentation:
 
 ## Technologies
  * Android
+ * Java
  * Firebase Cloud Messaging
  * PHP
  * MySQL
@@ -48,14 +49,14 @@ For more information must read the following documentation:
 
 
 ## Considerations
- * Localhost for android: 10.0.2.2
+ * Localhost for android emulator: 10.0.2.2
  * IDE: Android Studio
  * You can find the PHP and MySQL scripts in the application root folder.
 
 
 ## Related projects
  * [Implementation of an XMPP Connection Server for FCM](https://github.com/carlosCharz/fcmxmppserver)
- * [XMPP Connection Server for FCM using the latest version of the Smack library (4.1.8)](https://github.com/carlosCharz/fcmxmppserverv2)
+ * [XMPP Connection Server for FCM using the latest version of the Smack library (4.3.4)](https://github.com/carlosCharz/fcmxmppserverv2)
  * [Implementation of a base exponential back-off strategy class](https://github.com/carlosCharz/ExponentialBackOff)
 
 
@@ -70,7 +71,7 @@ _**Any improvement or comment about the project is always welcome! As well as ot
 
 ## License
 ```javas
-Copyright 2016 Carlos Becerra
+Copyright 2020 Carlos Becerra
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.

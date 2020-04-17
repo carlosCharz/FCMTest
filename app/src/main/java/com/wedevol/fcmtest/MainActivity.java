@@ -1,7 +1,9 @@
 package com.wedevol.fcmtest;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -13,7 +15,6 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Random;
-
 
 /**
  * Main Activity for FCM Token
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements IRequestListener 
         FirebaseMessaging.getInstance().subscribeToTopic("test");
         final String token = FirebaseInstanceId.getInstance().getToken();
         Log.d(TAG, "Token: " + token);
+        // NOTE if it prints null in the emulator first time maybe it is due to a delay problem
         deviceText.setText(token);
 
         //Call the token service to save the token in the database

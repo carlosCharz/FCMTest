@@ -15,7 +15,6 @@ public class FirebaseInstanceIDService extends FirebaseInstanceIdService impleme
 
     @Override
     public void onTokenRefresh() {
-
         Log.d(TAG, "Token refresh logic");
         String token = FirebaseInstanceId.getInstance().getToken();
         Log.d(TAG, "Refreshed token: " + token);
@@ -35,5 +34,4 @@ public class FirebaseInstanceIDService extends FirebaseInstanceIdService impleme
     public void onError(String message) {
         Log.d(TAG, "Error trying to register the token in the DB: " + message);
     }
-
 }

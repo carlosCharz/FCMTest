@@ -26,9 +26,9 @@
        return $result;
 	}
 	
-	$conn = mysqli_connect("localhost","root","","fcmtest");
-	$sql = " select token from users";
-	$result = mysqli_query($conn,$sql);
+	$conn = mysqli_connect("127.0.0.1", "root", "admin1234", "fcmtest");
+	$sql = " select token from users;";
+	$result = mysqli_query($conn, $sql);
 	$tokens = array();
 	if(mysqli_num_rows($result) > 0 ){
 		while ($row = mysqli_fetch_assoc($result)) {
